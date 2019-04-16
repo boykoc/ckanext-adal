@@ -1,8 +1,9 @@
 # TODO:
 #
 # [X] Create and import config file with Azure details.
-# [ ] Setup adal_login() to handle build auth url and call it.
-# [ ] Setup get_a_token() to handle callback, get token with returned code, validate token, log user in.
+# [X] Setup adal_login() to handle build auth url and call it.
+# [ ] Setup get_a_token() to handle callback, get token with returned code,
+#     validate token, log user in.
 # [ ] Add button or something to let users trigger login via ADAL.
 #
 #
@@ -21,9 +22,11 @@ import string
 
 AUTHORITY_URL = config.AUTHORITY_HOST_URL + '/' + config.TENANT
 REDIRECT_URI = 'http://52.237.34.255:{}/getAToken'.format('5000')
-TEMPLATE_AUTHZ_URL = ('https://login.microsoftonline.com/{}/oauth2/authorize?' +
+TEMPLATE_AUTHZ_URL = ('https://login.microsoftonline.com/{}' +
+                      '/oauth2/authorize?' +
                       'response_type=code&client_id={}&redirect_uri={}&' +
                       'state={}&resource={}')
+
 
 def adal_login():
     '''Make call to authorization_url to authenticate user and get
@@ -31,8 +34,8 @@ def adal_login():
     '''
     print("here 1")
     auth_state = (''.join(random.SystemRandom()
-                    .choice(string.ascii_uppercase + string.digits)
-                    for _ in range(48)))
+                  .choice(string.ascii_uppercase + string.digits)
+                  for _ in range(48)))
     print('here 2')
     authorizaction_url = TEMPLATE_AUTHZ_URL.format(
         config.TENANT,
@@ -44,6 +47,7 @@ def adal_login():
     resp = flask.Response(status=307)
     resp.headers['location'] = authorizaction_url
     return resp
+
 
 def get_a_token():
     html = u'''<!DOCTYPE html>
