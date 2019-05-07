@@ -29,6 +29,8 @@ from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
 import requests # TODO: Refactor?
 
+import ckan.model as model
+
 AUTHORITY_URL = config.AUTHORITY_HOST_URL + '/' + config.TENANT
 REDIRECT_URI = ckan_config['ckan.site_url'].rstrip('/') + '/getAToken'
 TEMPLATE_AUTHZ_URL = ('https://login.microsoftonline.com/{}' +
@@ -183,14 +185,17 @@ def _validate_email_domains(user_email):
 
 def _validate_user_exists_in_ckan(username, email):
     # Validate user is registered and active.
-        """
+    """
     Return the CKAN user with the given user name, or None.
     Check state, state: deleted can still login but gets a blank page because
     CKAN is handling authorization later as well.
     """
     try:
-        user = toolkit.get_action('user_show')(data_dict = {'id': username})
-        if user['state'] == 'active' and user['email'] == email:
+        # Get the user via the model as accessing it via get_action
+        # ('show_user') will be blocked. I anticipate having
+        # ckan.auth.public_user_details = false in the conig.
+        user = model.User.get(username)
+        if user.state == 'active' and user.email == email.lower():
             return user
         else:
             raise toolkit.ObjectNotFound
@@ -198,7 +203,6 @@ def _validate_user_exists_in_ckan(username, email):
         log.error('Exception raised. Invalid user. {}'
                   .format(repr(e)))
         return None
-    pass
 
 
 class AdalPlugin(plugins.SingletonPlugin):
