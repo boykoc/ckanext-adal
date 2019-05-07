@@ -75,6 +75,8 @@ def get_a_token():
             decoded['unique_name']):
             raise
 
+        # By now token is valid and user is valid so login.
+        # TODO: change this to set c.user in identify() in the future.
         resp = _ckan_authenticate(
             decoded['unique_name']
             .lower()
@@ -89,6 +91,8 @@ def get_a_token():
 
 
 def _aquire_token():
+    '''Gets the access_token with authorization code.
+    '''
     code = flask.request.args['code']
     state = flask.request.args['state']
     # Main ADAL logic starts.
@@ -105,13 +109,15 @@ def _aquire_token():
 
 
 def _ckan_authenticate(user_name):
-    # Log the user in programatically.
-    # Reference: ckan/views/user.py
-    # By this point we either have a user or created one and they're good to
-    # login.
+    '''Log the user in programatically.
+    Returns response.
+    Reference: ckan/views/user.py
+    By this point we either have a user or created one and they're good to
+    login.
+    '''
     resp = toolkit.h.redirect_to(u'user.logged_in')
 
-    '''Set the repoze.who cookie to match a given user_id'''
+    # Set the repoze.who cookie to match a given user_id
     if u'repoze.who.plugins' in request.environ:
         rememberer = request.environ[u'repoze.who.plugins'][u'friendlyform']
         identity = {u'repoze.who.userid': user_name}
@@ -121,6 +127,16 @@ def _ckan_authenticate(user_name):
 
 
 def _validate_access_token(access_token):
+    '''Validates the access token to ensure it is good to use and wasn't
+    modified.
+    Validates the following claims:
+      * exp
+      * nbf
+      * iat
+      * audience
+      * issuer
+    Returns decoded access_token if valid otherwise thows error and aborts.
+    '''
     # Get the token header to find cert related info.
     token_header = jwt.get_unverified_header(access_token)
 
@@ -152,7 +168,6 @@ def _validate_access_token(access_token):
             issuer=config.ISSUER)
     except Exception as e:
         log.error('Exception raised while decoding JWT. {}'.format(repr(e)))
-        # TODO: abort and redirect with error message.
         toolkit.abort(403, _('Not authorized.'))
 
     return decoded
@@ -161,8 +176,6 @@ def _validate_access_token(access_token):
 def _validate_email_domains(user_email):
     ''' Validate email domains.
     '''
-    # TODO: Do something with return value or abort here.
-    # TODO: Validate matching email, username, etc and login proper user.
     try:
         if not user_email.split('@')[1] in config.EMAIL_DOMAINS:
             raise
@@ -174,12 +187,14 @@ def _validate_email_domains(user_email):
 
 
 def _validate_user_exists_in_ckan(username, email):
-    # Validate user is registered and active.
-    """
-    Return the CKAN user with the given user name, or None.
+    '''Validate user is registered and active.
+    Return the CKAN user or None.
+    Checks if user exists based on username.
+    Checks if user is active.
+    Checks if user email is a complete match.
     Check state, state: deleted can still login but gets a blank page because
     CKAN is handling authorization later as well.
-    """
+    '''
     try:
         # Get the user via the model as accessing it via get_action
         # ('show_user') will be blocked. I anticipate having
