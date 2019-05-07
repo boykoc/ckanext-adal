@@ -2,11 +2,19 @@
 import ckanext.adal.plugin as plugin
 import ckanext.adal.adal_config as adal_config
 from nose.tools import assert_equals
+from ckan.tests import factories
+import ckan.model as model
 
 def test_plugin():
     pass
 
 class TestAdal(object):
+  def teardown(self):
+    '''Nose runs this method after each test method in our test class.'''
+    # Rebuild CKAN's database after each test method, so that each test
+    # method runs with a clean slate.
+    model.repo.rebuild_db()
+
   def test_adal_login(self):
     pass
 
@@ -31,5 +39,14 @@ class TestAdal(object):
                   False)
 
   def test_validate_user_exists_in_ckan(self):
-    pass
+    user = factories.User()
+
+    valid_user = plugin._validate_user_exists_in_ckan(
+      user['name'],
+      user['email'])
+    is_not_valid_user = plugin._validate_user_exists_in_ckan(
+      'darth_vader',
+      'darth.vader@workplace.com')
+    assert_equals(valid_user.id, user['id'])
+    assert_equals(is_not_valid_user, None)
 

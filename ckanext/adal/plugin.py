@@ -200,7 +200,7 @@ def _validate_user_exists_in_ckan(username, email):
         # ('show_user') will be blocked. I anticipate having
         # ckan.auth.public_user_details = false in the conig.
         user = model.User.get(username)
-        if user.state == 'active' and user.email == email.lower():
+        if user and user.state == 'active' and user.email == email.lower():
             return user
         else:
             raise toolkit.ObjectNotFound
