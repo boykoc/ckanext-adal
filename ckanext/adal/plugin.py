@@ -1,17 +1,8 @@
-# TODO:
-#
-# [X] Create and import config file with Azure details.
-# [X] Setup adal_login() to handle build auth url and call it.
-# [X] Setup get_a_token() to handle callback, get token with returned code,
-#     validate token, log user in.
-# [ ] Add button or something to let users trigger login via ADAL.
-#
-#
-
 # CKAN related imports
 import logging
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+import ckan.model as model
 from ckan.common import request
 from ckan.common import config as ckan_config
 from flask import Blueprint
@@ -29,7 +20,6 @@ from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
 import requests # TODO: Refactor?
 
-import ckan.model as model
 
 AUTHORITY_URL = config.AUTHORITY_HOST_URL + '/' + config.TENANT
 REDIRECT_URI = ckan_config['ckan.site_url'].rstrip('/') + '/getAToken'
