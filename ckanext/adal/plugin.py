@@ -85,7 +85,7 @@ def get_a_token():
     except Exception as e:
         log.error('Exception raised. Unable to authenticate. {}'
                   .format(repr(e)))
-        toolkit.abort(403, _('Not authorized.'))
+        toolkit.abort(403, 'Not authorized.')
 
     return resp
 
@@ -138,25 +138,25 @@ def _validate_access_token(access_token):
     Returns decoded access_token if valid otherwise thows error and aborts.
     '''
     # Get the token header to find cert related info.
-    token_header = jwt.get_unverified_header(access_token)
-
-    # Get certs and find match from header.
-    res = requests.get('https://login.windows.net/common/discovery/keys')
-    jwk_keys = res.json()
-    x5c = None
-
-    for key in jwk_keys['keys']:
-        if key['kid'] == token_header['kid']:
-            x5c = key['x5c']
-
-    # Now that a cert match is found, get it's public key.
-    cert = ''.join([
-        '-----BEGIN CERTIFICATE-----\n',
-        x5c[0],
-        '\n-----END CERTIFICATE-----\n'])
-    public_key = load_pem_x509_certificate(cert.encode(),
-                                           default_backend()).public_key()
     try:
+        token_header = jwt.get_unverified_header(access_token)
+
+        # Get certs and find match from header.
+        res = requests.get('https://login.windows.net/common/discovery/keys')
+        jwk_keys = res.json()
+        x5c = None
+
+        for key in jwk_keys['keys']:
+            if key['kid'] == token_header['kid']:
+                x5c = key['x5c']
+
+        # Now that a cert match is found, get it's public key.
+        cert = ''.join([
+            '-----BEGIN CERTIFICATE-----\n',
+            x5c[0],
+            '\n-----END CERTIFICATE-----\n'])
+        public_key = load_pem_x509_certificate(cert.encode(),
+                                               default_backend()).public_key()
         # exp, nbf and and iat claims are automatically validated if present
         # in the JWt. Audience and issuer are additional checks passed in when
         # decoding.
@@ -168,7 +168,7 @@ def _validate_access_token(access_token):
             issuer=config.ISSUER)
     except Exception as e:
         log.error('Exception raised while decoding JWT. {}'.format(repr(e)))
-        toolkit.abort(403, _('Not authorized.'))
+        toolkit.abort(403, 'Not authorized.')
 
     return decoded
 
