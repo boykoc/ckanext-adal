@@ -48,11 +48,10 @@ To install ckanext-adal:
 Config Settings
 ---------------
 
-Edit the configuration file for the plugin at `ckanext/adal/adal_config.py`.
+Edit the configuration file for the plugin at ``ckanext/adal/adal_config.py``.
 
 Add a Redirect URI in Azure AD. Go to Azure Active Directory in Azure. Look
-for Authentication to set the URI of type Web to `https://
-[YOUR_DOMAIN_HERE]/getAToken`
+for Authentication to set the URI of type Web to ``https://[YOUR_DOMAIN_HERE]/getAToken``
 
 
 -----------------
