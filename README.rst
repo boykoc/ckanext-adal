@@ -1,33 +1,3 @@
-.. You should enable this project on travis-ci.org and coveralls.io to make
-   these badges work. The necessary Travis and Coverage config files have been
-   generated for you.
-
-.. image:: https://travis-ci.org/boykoc/ckanext-adal.svg?branch=master
-    :target: https://travis-ci.org/boykoc/ckanext-adal
-
-.. image:: https://coveralls.io/repos/boykoc/ckanext-adal/badge.svg
-  :target: https://coveralls.io/r/boykoc/ckanext-adal
-
-.. image:: https://pypip.in/download/ckanext-adal/badge.svg
-    :target: https://pypi.python.org/pypi//ckanext-adal/
-    :alt: Downloads
-
-.. image:: https://pypip.in/version/ckanext-adal/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-adal/
-    :alt: Latest Version
-
-.. image:: https://pypip.in/py_versions/ckanext-adal/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-adal/
-    :alt: Supported Python versions
-
-.. image:: https://pypip.in/status/ckanext-adal/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-adal/
-    :alt: Development Status
-
-.. image:: https://pypip.in/license/ckanext-adal/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-adal/
-    :alt: License
-
 =============
 ckanext-adal
 =============
@@ -41,8 +11,7 @@ ckanext-adal
 Requirements
 ------------
 
-For example, you might want to mention here which versions of CKAN this
-extension works with.
+This extension relies on [ADAL](https://github.com/AzureAD/azure-activedirectory-library-for-python).
 
 
 ------------
@@ -61,7 +30,10 @@ To install ckanext-adal:
 
 2. Install the ckanext-adal Python package into your virtual environment::
 
-     pip install ckanext-adal
+     git clone https://github.com/boykoc/ckanext-adal.git
+     cd ckanext-adal
+     python setup.py develop
+     pip install -r requirements.txt
 
 3. Add ``adal`` to the ``ckan.plugins`` setting in your CKAN
    config file (by default the config file is located at
@@ -76,24 +48,11 @@ To install ckanext-adal:
 Config Settings
 ---------------
 
-Document any optional config settings here. For example::
+Edit the configuration file for the plugin at `ckanext/adal/adal_config.py`.
 
-    # The minimum number of hours to wait before re-checking a resource
-    # (optional, default: 24).
-    ckanext.adal.some_setting = some_default_value
-
-
-------------------------
-Development Installation
-------------------------
-
-To install ckanext-adal for development, activate your CKAN virtualenv and
-do::
-
-    git clone https://github.com/boykoc/ckanext-adal.git
-    cd ckanext-adal
-    python setup.py develop
-    pip install -r dev-requirements.txt
+Add a Redirect URI in Azure AD. Go to Azure Active Directory in Azure. Look
+for Authentication to set the URI of type Web to `https://
+[YOUR_DOMAIN_HERE]/getAToken`
 
 
 -----------------
@@ -109,58 +68,3 @@ coverage installed in your virtualenv (``pip install coverage``) then run::
 
     nosetests --nologcapture --with-pylons=test.ini --with-coverage --cover-package=ckanext.adal --cover-inclusive --cover-erase --cover-tests
 
-
----------------------------------
-Registering ckanext-adal on PyPI
----------------------------------
-
-ckanext-adal should be availabe on PyPI as
-https://pypi.python.org/pypi/ckanext-adal. If that link doesn't work, then
-you can register the project on PyPI for the first time by following these
-steps:
-
-1. Create a source distribution of the project::
-
-     python setup.py sdist
-
-2. Register the project::
-
-     python setup.py register
-
-3. Upload the source distribution to PyPI::
-
-     python setup.py sdist upload
-
-4. Tag the first release of the project on GitHub with the version number from
-   the ``setup.py`` file. For example if the version number in ``setup.py`` is
-   0.0.1 then do::
-
-       git tag 0.0.1
-       git push --tags
-
-
-----------------------------------------
-Releasing a New Version of ckanext-adal
-----------------------------------------
-
-ckanext-adal is availabe on PyPI as https://pypi.python.org/pypi/ckanext-adal.
-To publish a new version to PyPI follow these steps:
-
-1. Update the version number in the ``setup.py`` file.
-   See `PEP 440 <http://legacy.python.org/dev/peps/pep-0440/#public-version-identifiers>`_
-   for how to choose version numbers.
-
-2. Create a source distribution of the new version::
-
-     python setup.py sdist
-
-3. Upload the source distribution to PyPI::
-
-     python setup.py sdist upload
-
-4. Tag the new release of the project on GitHub with the version number from
-   the ``setup.py`` file. For example if the version number in ``setup.py`` is
-   0.0.2 then do::
-
-       git tag 0.0.2
-       git push --tags
