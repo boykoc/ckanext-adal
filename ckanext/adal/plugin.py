@@ -177,7 +177,7 @@ def _validate_email_domains(user_email):
     ''' Validate email domains.
     '''
     try:
-        if not user_email.split('@')[1] in config.EMAIL_DOMAINS:
+        if not user_email.split('@')[1].lower() in config.EMAIL_DOMAINS:
             raise
     except Exception as e:
         log.error('Exception raised. Improper email domain. {}'
@@ -200,7 +200,9 @@ def _validate_user_exists_in_ckan(username, email):
         # ('show_user') will be blocked. I anticipate having
         # ckan.auth.public_user_details = false in the conig.
         user = model.User.get(username)
-        if user and user.state == 'active' and user.email == email.lower():
+        if (user and
+                user.state == 'active' and
+                user.email.lower() == email.lower()):
             return user
         else:
             raise toolkit.ObjectNotFound
